@@ -1,6 +1,7 @@
 import "./styles.css";
 import { parse, format } from "date-fns";
 
+//Create all the elements
 const apiKey = "aef5bd549b692fe0d5fd9e0e2b47b61e";
 const contentContainer = document.querySelector(".content");
 const searchInput = document.querySelector("input");
@@ -35,20 +36,24 @@ const weatherColors = {
 let currentIndex = 0;
 let temperatureDegrees = "celcius";
 
+//When the user click's in the btn it gets the weather and the forecast
 searchBtn.addEventListener("click", () => {
   const inputValue = searchInput.value;
   getActualWeather(inputValue);
   getForecast(inputValue);
 });
 
+//Function to get the actual weather
 async function getActualWeather(country) {
   try {
+    //Get the information
     const responseWeather = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${country}&units=metric&appid=${apiKey}`
     );
     const responseWeatherJson = await responseWeather.json();
     console.log(responseWeatherJson);
 
+    //Create variables with the values that need
     const weatherCondition = responseWeatherJson.weather[0].main;
     const actualWeatherIcon = responseWeatherJson.weather[0].icon;
     const temperature = responseWeatherJson.main.temp;
@@ -61,6 +66,7 @@ async function getActualWeather(country) {
     const clouds = responseWeatherJson.clouds.all;
     const feelsLike = responseWeatherJson.main.feels_like;
 
+    //Display the information
     contentContainer.style.background = weatherColors[weatherCondition];
     cityNameText.textContent = cityName;
     weatherText.textContent =
@@ -78,13 +84,14 @@ async function getActualWeather(country) {
   }
 }
 
+//Function to get the forecast
 async function getForecast(country) {
   try {
+    //Get the information
     const responseForecast = await fetch(
       `https://api.openweathermap.org/data/2.5/forecast?q=${country}&units=metric&appid=${apiKey}`
     );
     const responseForecastJson = await responseForecast.json();
-    console.log(responseForecastJson);
 
     displayForecast(responseForecastJson);
   } catch (error) {
@@ -92,17 +99,22 @@ async function getForecast(country) {
   }
 }
 
+//Function to display all the elements for the forecast
 function displayForecast(response) {
+  //Clean all the child of the elements
   allWeatherElements.forEach((element) => {
     element.innerHTML = "";
     element.classList.remove("selected");
   });
 
+  //Select the first element
   allWeatherElements[0].classList.add("selected");
 
+  //Refresh the values of the carrousel
   carousel.style.transform = `translateX(0px)`;
   currentIndex = 0;
 
+  //Creates the elements for each forecast card
   allWeatherElements.forEach((element, index) => {
     element.style.background =
       weatherColors[response.list[index].weather[0].main];
@@ -120,6 +132,7 @@ function displayForecast(response) {
 
     const elementDay = document.createElement("p");
     elementDay.classList.add("weather-element-day");
+    //Format the date
     const dateTimeString = response.list[index].dt_txt;
     const [dateString, timeString] = dateTimeString.split(" ");
 
@@ -131,13 +144,14 @@ function displayForecast(response) {
 
     elementDay.textContent = `${formattedDate} ${formattedTime}`;
 
+    //Add the elements to the card
     element.appendChild(elementIcon);
     element.appendChild(elementTemperature);
     element.appendChild(elementDay);
   });
 }
 
-// Función para mover el carrusel
+// Function to move the carrousel
 function moveCarousel(moveStep) {
   allWeatherElements.forEach((element) => {
     element.classList.remove("selected");
@@ -153,11 +167,13 @@ function moveCarousel(moveStep) {
   carousel.style.transform = `translateX(-${newTransform}px)`;
 }
 
+//Function to change the temperature to Fahrenheit or Celcius
 async function changeTemperature() {
   const actualCountry = cityNameText.textContent;
 
   if (temperatureDegrees === "celcius") {
     try {
+      //Get the temperature information in Fahrenheit
       const responseWeather = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?q=${actualCountry}&units=imperial&appid=${apiKey}`
       );
@@ -196,6 +212,7 @@ async function changeTemperature() {
     }
   } else {
     try {
+      //Get the temperature information in Fahrenheit
       const responseWeather = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?q=${actualCountry}&units=metric&appid=${apiKey}`
       );
@@ -235,7 +252,7 @@ async function changeTemperature() {
   }
 }
 
-// Event listeners para los botones
+// Event listeners for the buttons
 document
   .getElementById("right")
   .addEventListener("click", () => moveCarousel(1));
@@ -245,5 +262,6 @@ document
 
 changeTemperatureBtn.addEventListener("click", () => changeTemperature());
 
-getActualWeather("buenos aires");
-getForecast("buenos aires");
+//Initial load
+getActualWeather("Buenos Aires");
+getForecast("Buenos Aires");
