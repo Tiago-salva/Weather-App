@@ -93,13 +93,15 @@ async function getForecast(country) {
 }
 
 function displayForecast(response) {
-  allWeatherElements[0].classList.add("selected");
-
   allWeatherElements.forEach((element) => {
     element.innerHTML = "";
+    element.classList.remove("selected");
   });
 
+  allWeatherElements[0].classList.add("selected");
+
   carousel.style.transform = `translateX(0px)`;
+  currentIndex = 0;
 
   allWeatherElements.forEach((element, index) => {
     element.style.background =
