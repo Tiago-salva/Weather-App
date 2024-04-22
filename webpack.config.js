@@ -8,6 +8,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "./src/index.html",
+      inject: "body",
     }),
   ],
   module: {
@@ -17,8 +18,11 @@ module.exports = {
         use: ["style-loader", "css-loader"],
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        test: /\.svg$/,
         type: "asset/resource",
+        generator: {
+          filename: "assets/images/[name][hash][ext][query]", // Configura el directorio y el nombre
+        },
       },
     ],
   },
